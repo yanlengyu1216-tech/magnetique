@@ -16,10 +16,11 @@ export default function OrdersPage() {
   const [search, setSearch] = useState("")
 
   useEffect(() => {
+    if (!customer) { setLoading(false); return }
+    const cid = customer.id
     async function fetchOrders() {
-      if (!customer) { setLoading(false); return }
       try {
-        const res = await fetch(`${API}/store/orders/customer/${customer.id}`)
+        const res = await fetch(`${API}/store/orders/customer/${cid}`)
         if (res.ok) {
           const data = await res.json()
           setOrders(data.orders || [])

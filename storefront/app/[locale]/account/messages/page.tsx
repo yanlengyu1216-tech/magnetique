@@ -17,10 +17,11 @@ export default function MessagesPage() {
   useEffect(() => {
     if (authLoading) return
     if (!customer) { setLoading(false); return }
+    const cid = customer.id
     async function fetchMessages() {
       try {
         // Fetch orders as "messages" (order status notifications)
-        const res = await fetch(`${API}/store/orders/customer/${customer.id}`)
+        const res = await fetch(`${API}/store/orders/customer/${cid}`)
         if (res.ok) {
           const data = await res.json()
           const orderMessages = (data.orders || []).map((o: any) => ({
