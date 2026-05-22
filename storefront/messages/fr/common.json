@@ -1,0 +1,139 @@
+{
+  "site": {
+    "name": "Magnetique",
+    "tagline": "Les plus beaux aimants pour réfrigérateur du monde",
+    "description": "Découvrez des aimants pour réfrigérateur artisanaux du monde entier."
+  },
+  "nav": {
+    "home": "Accueil",
+    "all_products": "Tous les produits",
+    "categories": "Catégories",
+    "custom_service": "Service personnalisé",
+    "about": "À propos",
+    "contact": "Contact",
+    "search": "Rechercher",
+    "cart": "Panier",
+    "account": "Mon compte",
+    "wishlist": "Liste de souhaits",
+    "sign_in": "Connexion",
+    "sign_up": "Inscription",
+    "sign_out": "Déconnexion"
+  },
+  "hero": {
+    "title": "Des aimants qui racontent des histoires",
+    "subtitle": "Aimants pour réfrigérateur artisanaux des quatre coins du monde",
+    "cta": "Acheter maintenant",
+    "cta_custom": "Créer le vôtre"
+  },
+  "product": {
+    "title": "Produits",
+    "add_to_cart": "Ajouter au panier",
+    "buy_now": "Acheter maintenant",
+    "add_to_wishlist": "Ajouter à la liste de souhaits",
+    "remove_from_wishlist": "Retirer de la liste",
+    "share": "Partager",
+    "sold_out": "Épuisé",
+    "in_stock": "En stock",
+    "low_stock": "Plus que {count} disponibles",
+    "quantity": "Quantité",
+    "description": "Description",
+    "reviews": "Avis",
+    "specifications": "Caractéristiques",
+    "you_may_also_like": "Vous aimerez peut-être aussi",
+    "also_bought": "Souvent achetés ensemble",
+    "sort": {
+      "newest": "Plus récents",
+      "price_low": "Prix croissant",
+      "price_high": "Prix décroissant",
+      "best_selling": "Meilleures ventes",
+      "top_rated": "Les mieux notés"
+    },
+    "filter": {
+      "title": "Filtres",
+      "category": "Catégorie",
+      "price_range": "Prix",
+      "material": "Matière",
+      "size": "Taille",
+      "theme": "Thème",
+      "clear_all": "Tout effacer",
+      "apply": "Appliquer"
+    },
+    "view": { "grid": "Vue grille", "list": "Vue liste" }
+  },
+  "cart": {
+    "title": "Panier",
+    "empty": "Votre panier est vide",
+    "continue_shopping": "Continuer mes achats",
+    "subtotal": "Sous-total",
+    "shipping": "Livraison",
+    "tax": "TVA",
+    "total": "Total",
+    "coupon_code": "Code promo",
+    "apply_coupon": "Appliquer",
+    "checkout": "Commander",
+    "remove": "Supprimer",
+    "free_shipping": "Livraison gratuite",
+    "free_shipping_hint": "Livraison gratuite dès {amount}"
+  },
+  "checkout": {
+    "title": "Commande",
+    "guest": "Commander en tant qu'invité",
+    "register": "Créer un compte",
+    "shipping_address": "Adresse de livraison",
+    "billing_address": "Adresse de facturation",
+    "same_as_shipping": "Identique à la livraison",
+    "shipping_method": "Mode de livraison",
+    "payment_method": "Mode de paiement",
+    "order_summary": "Récapitulatif",
+    "place_order": "Passer la commande",
+    "order_confirmed": "Commande confirmée !",
+    "order_number": "Numéro de commande",
+    "thank_you": "Merci pour votre commande !",
+    "continue_shopping": "Continuer mes achats"
+  },
+  "account": {
+    "dashboard": "Tableau de bord",
+    "profile": "Mon profil",
+    "orders": "Mes commandes",
+    "addresses": "Mes adresses",
+    "wishlist": "Ma liste de souhaits",
+    "coupons": "Mes coupons",
+    "messages": "Messages",
+    "settings": "Paramètres",
+    "order_history": "Historique des commandes",
+    "edit_profile": "Modifier le profil",
+    "add_address": "Ajouter une adresse"
+  },
+  "footer": {
+    "about": "À propos",
+    "about_text": "Nous créons des aimants pour réfrigérateur artisanaux qui capturent la beauté des destinations du monde entier.",
+    "quick_links": "Liens rapides",
+    "customer_service": "Service client",
+    "subscribe": "S'abonner",
+    "privacy_policy": "Politique de confidentialité",
+    "return_policy": "Politique de retour",
+    "faq": "FAQ",
+    "copyright": "© {year} Magnetique. Tous droits réservés."
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "retry": "Réessayer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "back": "Retour",
+    "search": "Rechercher",
+    "search_placeholder": "Rechercher des produits...",
+    "view_all": "Voir tout",
+    "free": "Gratuit",
+    "items": "articles",
+    "page": "Page",
+    "of": "sur",
+    "breadcrumb_home": "Accueil"
+  },
+  "announcement": {
+    "text": "🎄 Soldes de Noël : 20% de RÉDUCTION avec le code MERRY20 | Livraison gratuite dès 50€"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "cd medusa-backend && npm install"
+  },
+  "deploy": {
+    "startCommand": "cd medusa-backend && node src/index.js",
+    "healthcheckPath": "/health",
+    "restartPolicyType": "ON_FAILURE",
+    "numReplicas": 1
+  }
+}
