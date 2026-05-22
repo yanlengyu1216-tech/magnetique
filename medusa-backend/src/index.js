@@ -12,6 +12,15 @@ app.use(express.json())
 // Initialize database
 const db = initDatabase()
 
+// Auto-seed if database is empty
+const productCount = db.prepare("SELECT COUNT(*) as count FROM products").get().count
+if (productCount === 0) {
+  console.log("🌱 Database is empty, running seed...")
+  require("./seeders/seed")
+} else {
+  console.log(`✓ Database has ${productCount} products`)
+}
+
 // Make db accessible to routes
 app.use((req, res, next) => {
   req.db = db
