@@ -36,7 +36,7 @@ export default function ProductDetailPage() {
 
   const handle_ = typeof params.handle === "string" ? params.handle : ""
 
-  const isInWishlist = product ? wishlistItems.some((i) => i.productId === product.id) : false
+  const isInWishlist = product ? wishlistItems.some((i) => i.id === product.id) : false
 
   useEffect(() => {
     if (product) document.title = `${product.title} | Magnetique`
