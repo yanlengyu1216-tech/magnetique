@@ -14,11 +14,10 @@ export default function AccountDashboard() {
   const [orders, setOrders] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
+   useEffect(() => {
     if (!customer) { setLoading(false); return }
     const cid = customer.id
     async function fetchOrders() {
-      try {
         const res = await fetch(`${API}/store/orders/customer/${cid}`)
         if (res.ok) {
           const data = await res.json()
