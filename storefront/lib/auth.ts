@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
-
-const API = process.env.NEXT_PUBLIC_MEDUSA_URL || "http://localhost:9000"
+import { API } from "@/lib/api"
 
 interface Customer {
   id: string

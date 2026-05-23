@@ -4,8 +4,7 @@ import { useTranslations } from "next-intl"
 import { useState, useEffect } from "react"
 import { User, Lock, Bell, Loader2 } from "lucide-react"
 import { useAuth } from "@/lib/auth"
-
-const API = process.env.NEXT_PUBLIC_MEDUSA_URL || "http://localhost:9000"
+import { API } from "@/lib/api"
 
 export default function AccountSettings() {
   const t = useTranslations("account")

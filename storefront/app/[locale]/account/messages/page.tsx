@@ -5,8 +5,7 @@ import { useTranslations } from "next-intl"
 import { MessageSquare, Package, ChevronRight, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth"
-
-const API = process.env.NEXT_PUBLIC_MEDUSA_URL || "http://localhost:9000"
+import { API } from "@/lib/api"
 
 export default function MessagesPage() {
   const t = useTranslations("account")

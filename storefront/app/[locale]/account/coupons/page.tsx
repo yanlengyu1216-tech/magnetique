@@ -6,8 +6,7 @@ import { Ticket, Copy, Check, ExternalLink } from "lucide-react"
 import Link from "next/link"
 import { useCartStore } from "@/store/cart"
 import { useAuth } from "@/lib/auth"
-
-const API = process.env.NEXT_PUBLIC_MEDUSA_URL || "http://localhost:9000"
+import { API } from "@/lib/api"
 
 export default function CouponsPage() {
   const t = useTranslations("account")

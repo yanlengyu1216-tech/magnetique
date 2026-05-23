@@ -5,8 +5,7 @@ import { Package, Clock, CreditCard, ChevronRight, Search, Loader2 } from "lucid
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { useAuth } from "@/lib/auth"
-
-const API = process.env.NEXT_PUBLIC_MEDUSA_URL || "http://localhost:9000"
+import { API } from "@/lib/api"
 
 export default function OrdersPage() {
   const t = useTranslations("account")

@@ -6,6 +6,7 @@ import { useSearchParams, useRouter } from "next/navigation"
 import { Grid3X3, List, SlidersHorizontal, X, Search, ChevronDown, Loader2 } from "lucide-react"
 import { ProductCard } from "@/components/product/ProductCard"
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs"
+import { API } from "@/lib/api"
 
 interface Category {
   id: string
@@ -63,8 +64,6 @@ export default function ProductsPage() {
   const [showFilters, setShowFilters] = useState(false)
   const [sortBy, setSortBy] = useState("newest")
   const [showSortMenu, setShowSortMenu] = useState(false)
-
-  const API = process.env.NEXT_PUBLIC_MEDUSA_URL || "http://localhost:9000"
 
   const categoryId = searchParams.get("category") || ""
   const searchQuery = searchParams.get("q") || ""

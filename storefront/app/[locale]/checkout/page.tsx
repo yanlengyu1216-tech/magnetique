@@ -6,8 +6,7 @@ import Link from "next/link"
 import { ChevronRight, CreditCard, Shield, Lock, Loader2 } from "lucide-react"
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs"
 import { useCartStore } from "@/store/cart"
-
-const API = process.env.NEXT_PUBLIC_MEDUSA_URL || "http://localhost:9000"
+import { API } from "@/lib/api"
 
 const shippingMethods = [
   { id: "ship_free", name: "Free Shipping", price: 0, deliveryDays: "7-10 business days", description: "Free on orders over $50" },

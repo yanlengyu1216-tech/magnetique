@@ -11,8 +11,7 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs"
 import { ProductCard } from "@/components/product/ProductCard"
 import { useCartStore } from "@/store/cart"
 import { useWishlistStore } from "@/store/wishlist"
-
-const API = process.env.NEXT_PUBLIC_MEDUSA_URL || "http://localhost:9000"
+import { API } from "@/lib/api"
 
 export default function ProductDetailPage() {
   const t = useTranslations("product")

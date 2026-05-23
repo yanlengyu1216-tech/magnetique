@@ -1,4 +1,5 @@
-const MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_URL || "http://localhost:9000"
+import { API } from "@/lib/api"
+const MEDUSA_BACKEND_URL = API
 
 class MedusaClient {
   private baseUrl: string

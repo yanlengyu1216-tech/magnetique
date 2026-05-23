@@ -4,8 +4,7 @@ import { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { MapPin, Plus, Trash2, Star, Loader2, X } from "lucide-react"
 import { useAuth } from "@/lib/auth"
-
-const API = process.env.NEXT_PUBLIC_MEDUSA_URL || "http://localhost:9000"
+import { API } from "@/lib/api"
 
 interface Address {
   id: string

@@ -5,8 +5,7 @@ import Link from "next/link"
 import { useState, useEffect } from "react"
 import { Package, MapPin, Heart, Ticket, ArrowRight, ShoppingBag, Clock, DollarSign, Loader2 } from "lucide-react"
 import { useAuth } from "@/lib/auth"
-
-const API = process.env.NEXT_PUBLIC_MEDUSA_URL || "http://localhost:9000"
+import { API } from "@/lib/api"
 
 export default function AccountDashboard() {
   const t = useTranslations("account")
