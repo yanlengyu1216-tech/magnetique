@@ -26,11 +26,11 @@ router.get("/", (req, res) => {
     query += ` AND p.handle = ?`
     params.push(req.query.handle)
   }
-  if (req.query.category_id) {
+  if (req.query.category_id && !requestedCategoryHandle) {
     query += ` AND p.category_id = ?`
     params.push(req.query.category_id)
   }
-  if (req.query.category_handle) {
+  if (req.query.category_handle && !requestedCategoryHandle) {
     query += ` AND pc.handle = ?`
     params.push(req.query.category_handle)
   }
