@@ -3,6 +3,105 @@ const path = require("path")
 
 const DB_PATH = process.env.DATABASE_URL || path.join(__dirname, "..", "magnet-store.sqlite")
 
+function inferCategoryHandle(product) {
+  const haystack = [
+    product.title,
+    product.subtitle,
+    product.description,
+    product.handle,
+    product.tags,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase()
+
+  if (haystack.includes("3d")) return "3d-magnets"
+  if (haystack.includes("animal") || haystack.includes("panda")) return "animal-series"
+  if (haystack.includes("custom") || haystack.includes("personalized")) return "custom-design"
+  if (haystack.includes("food") || haystack.includes("pizza")) return "food-series"
+  if (haystack.includes("gift") || haystack.includes("set")) return "gift-sets"
+  if (haystack.includes("minimalist") || haystack.includes("moon")) return "minimalist"
+  if (haystack.includes("seasonal") || haystack.includes("christmas") || haystack.includes("holiday")) return "seasonal"
+  if (
+    haystack.includes("travel") ||
+    haystack.includes("paris") ||
+    haystack.includes("rome") ||
+    haystack.includes("london") ||
+    haystack.includes("japan") ||
+    haystack.includes("landmark")
+  ) {
+    return "travel-magnets"
+  }
+
+  return null
+}
+
+function getAdditionalCategoryHandles(product) {
+  const haystack = [
+    product.title,
+    product.subtitle,
+    product.description,
+    product.handle,
+    product.tags,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase()
+
+  const handles = new Set()
+
+  if (haystack.includes("3d")) handles.add("3d-magnets")
+  if (haystack.includes("animal") || haystack.includes("panda")) handles.add("animal-series")
+  if (haystack.includes("custom") || haystack.includes("personalized")) handles.add("custom-design")
+  if (haystack.includes("food") || haystack.includes("pizza")) handles.add("food-series")
+  if (haystack.includes("gift") || haystack.includes("set")) handles.add("gift-sets")
+  if (haystack.includes("minimalist") || haystack.includes("moon")) handles.add("minimalist")
+  if (haystack.includes("seasonal") || haystack.includes("christmas") || haystack.includes("holiday")) handles.add("seasonal")
+  if (
+    haystack.includes("travel") ||
+    haystack.includes("paris") ||
+    haystack.includes("rome") ||
+    haystack.includes("london") ||
+    haystack.includes("japan") ||
+    haystack.includes("landmark")
+  ) {
+    handles.add("travel-magnets")
+  }
+
+  return [...handles]
+}
+
+function backfillProductCategories(db) {
+  const categoryRows = db
+    .prepare("SELECT id, handle FROM product_categories WHERE is_active = 1")
+    .all()
+
+  const categoryMap = new Map(categoryRows.map((row) => [row.handle, row.id]))
+  const uncategorizedProducts = db
+    .prepare("SELECT id, title, subtitle, description, handle, tags FROM products WHERE category_id IS NULL OR category_id = ''")
+    .all()
+
+  const updateCategory = db.prepare("UPDATE products SET category_id = ?, updated_at = datetime('now') WHERE id = ?")
+
+  let updatedCount = 0
+  for (const product of uncategorizedProducts) {
+    const inferredHandle = inferCategoryHandle(product)
+    const categoryId = inferredHandle ? categoryMap.get(inferredHandle) : null
+    if (!categoryId) continue
+    updateCategory.run(categoryId, product.id)
+    updatedCount += 1
+  }
+
+  if (updatedCount > 0) {
+    console.log(`✓ Backfilled categories for ${updatedCount} products`)
+  }
+}
+
+function filterProductsByCategory(product, requestedCategoryHandle) {
+  const inferredHandles = getAdditionalCategoryHandles(product)
+  return inferredHandles.includes(requestedCategoryHandle)
+}
+
 function initDatabase() {
   const db = new Database(DB_PATH)
 
@@ -155,6 +254,8 @@ function initDatabase() {
   `)
 
   console.log("✓ Database initialized (SQLite)")
+  backfillProductCategories(db)
+  db.filterProductsByCategory = filterProductsByCategory
   return db
 }
 

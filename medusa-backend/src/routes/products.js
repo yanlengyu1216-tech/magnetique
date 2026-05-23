@@ -4,6 +4,13 @@ const router = express.Router()
 // GET /store/products
 router.get("/", (req, res) => {
   const db = req.db
+  const requestedCategoryId = req.query.category_id
+  let requestedCategoryHandle = req.query.category_handle || null
+
+  if (requestedCategoryId && !requestedCategoryHandle) {
+    const category = db.prepare("SELECT handle FROM product_categories WHERE id = ?").get(requestedCategoryId)
+    requestedCategoryHandle = category?.handle || null
+  }
 
   let query = `SELECT p.*, pc.name as category_name, pc.handle as category_handle
     FROM products p
@@ -80,7 +87,7 @@ router.get("/", (req, res) => {
   const getVariants = db.prepare("SELECT * FROM product_variants WHERE product_id = ?")
   const getReviews = db.prepare("SELECT COUNT(*) as count, AVG(rating) as avg_rating FROM reviews WHERE product_id = ?")
 
-  const result = products.map(p => {
+  let result = products.map(p => {
     const variants = getVariants.all(p.id)
     const reviewStats = getReviews.get(p.id)
     const images = JSON.parse(p.images || "[]")
@@ -116,6 +123,10 @@ router.get("/", (req, res) => {
       created_at: p.created_at,
     }
   })
+
+  if (requestedCategoryHandle) {
+    result = result.filter((product) => db.filterProductsByCategory(product, requestedCategoryHandle))
+  }
 
   res.json({ products: result, count: result.length })
 })

@@ -47,6 +47,18 @@ for (const c of [{t:"Best Sellers",h:"best-sellers"},{t:"New Arrivals",h:"new-ar
 }
 console.log(`  ✓ 3 collections created`)
 
+const categoryAssignments = {
+  "eiffel-tower-paris-magnet": "travel-magnets",
+  "colosseum-rome-magnet": "travel-magnets",
+  "custom-family-portrait-magnet": "custom-design",
+  "christmas-reindeer-magnet-set": "seasonal",
+  "sakura-cherry-blossom-magnet": "travel-magnets",
+  "panda-3d-magnet": "3d-magnets",
+  "pizza-italy-magnet": "food-series",
+  "london-bus-magnet": "travel-magnets",
+  "minimalist-moon-phase-magnet": "minimalist",
+}
+
 const products = [
   {id:uuidv4(),t:"Eiffel Tower Paris Magnet",s:"Handcrafted ceramic refrigerator magnet",h:"eiffel-tower-paris-magnet",d:"Beautiful hand-painted ceramic magnet featuring the iconic Eiffel Tower.",m:"Ceramic",w:50,l:6,wd:4,ht:0.5,oc:"CN",hs:"6914.10",th:"https://images.unsplash.com/photo-1549144511-f099e773c147?w=400",im:JSON.stringify(["https://images.unsplash.com/photo-1549144511-f099e773c147?w=800","https://images.unsplash.com/photo-1543348751-2c0c8e39f6b6?w=800"]),tg:JSON.stringify(["paris","france","travel","landmark"]),vs:[{t:"Standard",p:[{a:899,c:"usd"},{a:799,c:"eur"},{a:699,c:"gbp"}],q:150},{t:"Large",p:[{a:1299,c:"usd"},{a:1199,c:"eur"},{a:999,c:"gbp"}],q:80}]},
   {id:uuidv4(),t:"Colosseum Rome Magnet",s:"Rustic stone-finish refrigerator magnet",h:"colosseum-rome-magnet",d:"Intricately detailed magnet of the Roman Colosseum.",m:"Resin",w:45,l:5.5,wd:4,ht:0.6,oc:"CN",hs:"3926.40",th:"https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=400",im:JSON.stringify(["https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800"]),tg:JSON.stringify(["rome","italy","travel","history"]),vs:[{t:"Standard",p:[{a:799,c:"usd"},{a:699,c:"eur"},{a:599,c:"gbp"}],q:200}]},
@@ -59,12 +71,12 @@ const products = [
   {id:uuidv4(),t:"Minimalist Moon Phase Magnet",s:"Modern moon phase design in black and white",h:"minimalist-moon-phase-magnet",d:"Sleek minimalist magnet featuring all 8 moon phases on matte black ceramic.",m:"Ceramic",w:40,l:5,wd:5,ht:0.3,oc:"CN",hs:"6914.10",th:"https://images.unsplash.com/photo-1532767153582-b1a0e5145009?w=400",im:JSON.stringify(["https://images.unsplash.com/photo-1532767153582-b1a0e5145009?w=800"]),tg:JSON.stringify(["moon","minimalist","astronomy","modern"]),vs:[{t:"Standard",p:[{a:799,c:"usd"},{a:699,c:"eur"},{a:599,c:"gbp"}],q:200},{t:"Set of 8",p:[{a:4999,c:"usd"},{a:4499,c:"eur"},{a:3999,c:"gbp"}],q:40}]},
 ]
 
-const insertP = db.prepare("INSERT INTO products (id,title,subtitle,description,handle,material,weight,length,width,height,origin_country,hs_code,discountable,thumbnail,images,tags) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+const insertP = db.prepare("INSERT INTO products (id,title,subtitle,description,handle,material,weight,length,width,height,origin_country,hs_code,discountable,thumbnail,images,tags,category_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
 const insertV = db.prepare("INSERT INTO product_variants (id,product_id,title,prices,inventory_quantity) VALUES (?,?,?,?,?)")
 
 const tx = db.transaction(() => {
   for (const p of products) {
-    insertP.run(p.id,p.t,p.s,p.d,p.h,p.m,p.w,p.l,p.wd,p.ht,p.oc,p.hs,p.disc??1,p.th,p.im,p.tg)
+    insertP.run(p.id,p.t,p.s,p.d,p.h,p.m,p.w,p.l,p.wd,p.ht,p.oc,p.hs,p.disc??1,p.th,p.im,p.tg,catIds[categoryAssignments[p.h]] || null)
     for (const v of p.vs) insertV.run(uuidv4(),p.id,v.t,JSON.stringify(v.p),v.q)
   }
 })
