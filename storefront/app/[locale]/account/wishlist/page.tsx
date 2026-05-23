@@ -2,8 +2,8 @@
 
 import { useTranslations } from "next-intl"
 import { Heart, ShoppingCart, Trash2 } from "lucide-react"
-import Link from "next/link"
 import { useWishlistStore } from "@/store/wishlist"
+import { Link } from "@/lib/i18n/navigation"
 
 export default function WishlistPage() {
   const t = useTranslations("account")

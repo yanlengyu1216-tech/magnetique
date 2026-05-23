@@ -1,8 +1,7 @@
 "use client"
 
-import { useTranslations } from "next-intl"
-import Link from "next/link"
 import { ChevronRight, Home } from "lucide-react"
+import { Link } from "@/lib/i18n/navigation"
 
 interface BreadcrumbItem {
   label: string

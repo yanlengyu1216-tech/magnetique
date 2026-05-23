@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { MessageSquare, Package, ChevronRight, Loader2 } from "lucide-react"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
 import { useAuth } from "@/lib/auth"
 import { API } from "@/lib/api"
 

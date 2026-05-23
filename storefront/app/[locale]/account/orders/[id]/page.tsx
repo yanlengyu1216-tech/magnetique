@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl"
 import { useParams } from "next/navigation"
 import { useState, useEffect } from "react"
 import { Package, MapPin, CreditCard, ChevronLeft, Truck, Loader2 } from "lucide-react"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
 import { API } from "@/lib/api"
 
 export default function OrderDetailPage() {

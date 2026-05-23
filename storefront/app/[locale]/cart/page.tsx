@@ -2,10 +2,10 @@
 
 import { useState } from "react"
 import { useTranslations } from "next-intl"
-import Link from "next/link"
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, Tag } from "lucide-react"
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs"
 import { useCartStore } from "@/store/cart"
+import { Link } from "@/lib/i18n/navigation"
 
 export default function CartPage() {
   const t = useTranslations("cart")

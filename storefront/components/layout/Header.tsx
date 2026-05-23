@@ -2,10 +2,9 @@
 
 import { useState } from "react"
 import { useTranslations } from "next-intl"
-import Link from "next/link"
 import { usePathname } from "@/lib/i18n/navigation"
-import { Search, ShoppingCart, User, Heart, Menu, X, Globe, ChevronDown } from "lucide-react"
-import { locales } from "@/lib/i18n/navigation"
+import { Search, ShoppingCart, User, Heart, Menu, X } from "lucide-react"
+import { Link } from "@/lib/i18n/navigation"
 import { LocaleSwitcher } from "@/components/layout/LocaleSwitcher"
 import { CurrencySwitcher } from "@/components/layout/CurrencySwitcher"
 import { SearchBar } from "@/components/layout/SearchBar"
@@ -14,7 +13,7 @@ import { useCartStore } from "@/store/cart"
 const navLinks = [
   { href: "/", label: "nav.home" },
   { href: "/products", label: "nav.all_products" },
-  { href: "/products?view=categories", label: "nav.categories" },
+  { href: "/products?category_view=1", label: "nav.categories" },
   { href: "/custom-service", label: "nav.custom_service" },
   { href: "/about", label: "nav.about" },
   { href: "/contact", label: "nav.contact" },

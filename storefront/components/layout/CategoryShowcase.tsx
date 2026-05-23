@@ -1,54 +1,38 @@
 "use client"
 
-import Link from "next/link"
+import { useEffect, useState } from "react"
 import { ArrowRight } from "lucide-react"
+import { Link } from "@/lib/i18n/navigation"
+import { API } from "@/lib/api"
+import type { ApiCategory } from "@/lib/catalog"
 
-const categories = [
-  {
-    name: "Travel Magnets",
-    image: "https://images.unsplash.com/photo-1549144511-f099e773c147?w=600",
-    count: 48,
-    slug: "travel-magnets",
-    color: "from-blue-400 to-blue-600",
-  },
-  {
-    name: "Custom Design",
-    image: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=600",
-    count: 12,
-    slug: "custom-design",
-    color: "from-purple-400 to-purple-600",
-  },
-  {
-    name: "Seasonal",
-    image: "https://images.unsplash.com/photo-1579038773867-044c48829161?w=600",
-    count: 24,
-    slug: "seasonal",
-    color: "from-red-400 to-red-600",
-  },
-  {
-    name: "Animal Series",
-    image: "https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=600",
-    count: 36,
-    slug: "animal-series",
-    color: "from-green-400 to-green-600",
-  },
-  {
-    name: "3D Magnets",
-    image: "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=600",
-    count: 18,
-    slug: "3d-magnets",
-    color: "from-orange-400 to-orange-600",
-  },
-  {
-    name: "Gift Sets",
-    image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=600",
-    count: 15,
-    slug: "gift-sets",
-    color: "from-pink-400 to-pink-600",
-  },
+const categoryColors = [
+  "from-blue-400 to-blue-600",
+  "from-emerald-400 to-emerald-600",
+  "from-amber-400 to-orange-600",
+  "from-rose-400 to-rose-600",
+  "from-indigo-400 to-indigo-600",
+  "from-sky-400 to-cyan-600",
 ]
 
 export function CategoryShowcase() {
+  const [categories, setCategories] = useState<ApiCategory[]>([])
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const response = await fetch(`${API}/store/product-categories`)
+        if (!response.ok) return
+        const data = await response.json()
+        setCategories((data.product_categories || []).slice(0, 6))
+      } catch {
+        setCategories([])
+      }
+    }
+
+    loadCategories()
+  }, [])
+
   return (
     <section className="py-16 md:py-24 bg-gray-50">
       <div className="container mx-auto px-4">
@@ -68,28 +52,29 @@ export function CategoryShowcase() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {categories.map((cat) => (
-            <Link
-              key={cat.slug}
-              href={`/products?category=${cat.slug}`}
-              className="group relative aspect-[3/4] rounded-2xl overflow-hidden"
-            >
-              <img
-                src={cat.image}
-                alt={cat.name}
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                loading="lazy"
-              />
-              <div className={`absolute inset-0 bg-gradient-to-t ${cat.color} opacity-70`} />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-4">
-                <h3 className="text-white font-semibold text-sm md:text-base">{cat.name}</h3>
-                <p className="text-white/80 text-xs mt-1">{cat.count} items</p>
-              </div>
-            </Link>
-          ))}
-        </div>
+        {categories.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {categories.map((cat, index) => (
+              <Link
+                key={cat.id}
+                href={`/products?category=${cat.id}`}
+                className="group relative aspect-[3/4] rounded-2xl overflow-hidden bg-white shadow-sm"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${categoryColors[index % categoryColors.length]} opacity-90`} />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.32),transparent_45%)]" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <h3 className="text-white font-semibold text-sm md:text-base">{cat.name}</h3>
+                  <p className="text-white/80 text-xs mt-1">Explore this collection</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center text-gray-500">
+            Categories will appear here once the catalog is available.
+          </div>
+        )}
       </div>
     </section>
   )

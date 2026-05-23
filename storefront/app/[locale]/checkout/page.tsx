@@ -2,11 +2,11 @@
 
 import { useState } from "react"
 import { useTranslations } from "next-intl"
-import Link from "next/link"
 import { ChevronRight, CreditCard, Shield, Lock, Loader2 } from "lucide-react"
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs"
 import { useCartStore } from "@/store/cart"
 import { API } from "@/lib/api"
+import { Link } from "@/lib/i18n/navigation"
 
 const shippingMethods = [
   { id: "ship_free", name: "Free Shipping", price: 0, deliveryDays: "7-10 business days", description: "Free on orders over $50" },

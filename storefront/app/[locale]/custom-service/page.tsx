@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Upload, Palette, Heart, Camera, ArrowRight, Check } from "lucide-react"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
 
 const steps = [
   { icon: Camera, title: "Upload Your Image", description: "Choose a photo, design, or idea you'd like to turn into a magnet." },

@@ -1,15 +1,16 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import Link from "next/link"
-import { Mail, MapPin, Phone, ArrowRight } from "lucide-react"
+import { useState } from "react"
+import { Mail, MapPin, Phone } from "lucide-react"
+import { Link } from "@/lib/i18n/navigation"
 
 const footerLinks = {
   shop: [
     { label: "All Products", href: "/products" },
     { label: "New Arrivals", href: "/products?sort=newest" },
-    { label: "Best Sellers", href: "/products?sort=best_selling" },
-    { label: "Gift Ideas", href: "/products?collection=gift-ideas" },
+    { label: "Best Sellers", href: "/products?sort=top_rated" },
+    { label: "Gift Ideas", href: "/products?q=gift" },
     { label: "Sale", href: "/products?on_sale=true" },
   ],
   support: [
@@ -31,6 +32,15 @@ const footerLinks = {
 export function Footer() {
   const t = useTranslations("footer")
   const year = new Date().getFullYear()
+  const [email, setEmail] = useState("")
+  const [subscribed, setSubscribed] = useState(false)
+
+  const handleSubscribe = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (!email.trim()) return
+    setSubscribed(true)
+    setEmail("")
+  }
 
   return (
     <footer className="bg-gray-900 text-gray-300">
@@ -115,16 +125,25 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-gray-800">
           <div className="max-w-md mx-auto text-center">
             <h4 className="text-white font-semibold mb-2">{t("newsletter")}</h4>
-            <div className="flex mt-4">
+            <form onSubmit={handleSubscribe} className="flex mt-4">
               <input
                 type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
                 placeholder={t("newsletter_placeholder")}
+                required
                 className="flex-1 px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-l-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
               />
-              <button className="px-5 py-2.5 bg-brand-600 text-white text-sm font-medium rounded-r-lg hover:bg-brand-700 transition-colors">
+              <button
+                type="submit"
+                className="px-5 py-2.5 bg-brand-600 text-white text-sm font-medium rounded-r-lg hover:bg-brand-700 transition-colors"
+              >
                 {t("subscribe")}
               </button>
-            </div>
+            </form>
+            {subscribed && (
+              <p className="mt-3 text-sm text-green-400">Thanks, you are on the list.</p>
+            )}
           </div>
         </div>
       </div>

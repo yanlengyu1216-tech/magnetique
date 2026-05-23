@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useTranslations } from "next-intl"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
 import { useRouter } from "next/navigation"
 import { User, Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react"
 import { API } from "@/lib/api"

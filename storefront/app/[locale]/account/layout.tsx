@@ -1,13 +1,13 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import {
   LayoutDashboard, Package, MapPin, Heart, Ticket, MessageSquare, Settings, LogOut,
-  User, ChevronRight
+  ChevronRight
 } from "lucide-react"
 import { useAuth } from "@/lib/auth"
+import { Link, useRouter } from "@/lib/i18n/navigation"
 
 const accountLinks = [
   { href: "/account", label: "Dashboard", icon: LayoutDashboard },

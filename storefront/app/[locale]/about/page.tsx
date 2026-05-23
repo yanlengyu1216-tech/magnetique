@@ -1,7 +1,7 @@
 "use client"
 
 import { Award, Heart, Globe, Shield, Truck, Palette } from "lucide-react"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
 
 const values = [
   { icon: Heart, title: "Handcrafted with Love", description: "Every magnet is individually crafted by skilled artisans who pour their heart into each piece." },

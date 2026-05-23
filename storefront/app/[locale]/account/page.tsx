@@ -1,7 +1,7 @@
 "use client"
 
 import { useTranslations } from "next-intl"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
 import { useState, useEffect } from "react"
 import { Package, MapPin, Heart, Ticket, ArrowRight, ShoppingBag, Clock, DollarSign, Loader2 } from "lucide-react"
 import { useAuth } from "@/lib/auth"

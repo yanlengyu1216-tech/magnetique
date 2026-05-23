@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { Ticket, Copy, Check, ExternalLink } from "lucide-react"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
 import { useCartStore } from "@/store/cart"
 import { useAuth } from "@/lib/auth"
 import { API } from "@/lib/api"

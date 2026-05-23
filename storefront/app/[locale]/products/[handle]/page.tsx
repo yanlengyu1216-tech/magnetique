@@ -12,6 +12,7 @@ import { ProductCard } from "@/components/product/ProductCard"
 import { useCartStore } from "@/store/cart"
 import { useWishlistStore } from "@/store/wishlist"
 import { API } from "@/lib/api"
+import { getOriginalUsdPrice, getUsdPrice, toProductCardData, type ApiProduct } from "@/lib/catalog"
 
 export default function ProductDetailPage() {
   const t = useTranslations("product")
@@ -85,9 +86,8 @@ export default function ProductDetailPage() {
 
   const variant = product.variants?.[selectedVariant]
   const usdPrice = variant?.prices?.find((p: any) => p.c === "usd" || p.currency_code === "usd")
-  const price = usdPrice ? usdPrice.a / 100 : 0
-  const originalUsdPrice = variant?.prices?.find((p: any) => p.original_amount)
-  const originalPrice = originalUsdPrice ? originalUsdPrice.original_amount / 100 : undefined
+  const price = usdPrice ? (usdPrice.a || usdPrice.amount || 0) / 100 : 0
+  const originalPrice = getOriginalUsdPrice(variant?.prices)
   const hasSale = originalPrice && originalPrice > price
 
   const currentImages = product.images?.length ? product.images : [product.thumbnail].filter(Boolean)
@@ -104,6 +104,7 @@ export default function ProductDetailPage() {
       image: product.thumbnail || "",
       price,
       originalPrice: hasSale ? originalPrice : undefined,
+      quantity,
       maxQuantity: variant.inventory_quantity || 99,
     })
     setAddedToCart(true)
@@ -408,17 +409,7 @@ export default function ProductDetailPage() {
             <h2 className="text-2xl font-display font-bold text-gray-900 mb-8">You May Also Like</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
               {relatedProducts.map((p: any) => (
-                <ProductCard key={p.id} product={{
-                  id: p.id,
-                  handle: p.handle,
-                  title: p.title,
-                  thumbnail: p.thumbnail || "",
-                  price: (p.variants?.[0]?.prices?.find((pr: any) => pr.c === "usd" || pr.currency_code === "usd")?.a || 0) / 100,
-                  rating: p.rating || 0,
-                  reviewCount: p.review_count || 0,
-                  isNew: false,
-                  isOnSale: false,
-                }} />
+                <ProductCard key={p.id} product={toProductCardData(p as ApiProduct)} />
               ))}
             </div>
           </div>
@@ -452,7 +443,7 @@ function ReviewForm({ productId, onSubmitted }: { productId: string; onSubmitted
           product_id: productId,
           rating,
           text,
-          author: author || customer ? `${customer.first_name} ${customer.last_name}`.trim() || "Anonymous" : "Anonymous",
+          author: author || (customer ? `${customer.first_name} ${customer.last_name}`.trim() : "") || "Anonymous",
           customer_id: customer?.id || null,
         }),
       })

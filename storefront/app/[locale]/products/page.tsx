@@ -7,49 +7,8 @@ import { Grid3X3, List, SlidersHorizontal, X, Search, ChevronDown, Loader2 } fro
 import { ProductCard } from "@/components/product/ProductCard"
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs"
 import { API } from "@/lib/api"
-
-interface Category {
-  id: string
-  name: string
-  handle: string
-}
-
-interface ProductCardData {
-  id: string
-  handle: string
-  title: string
-  thumbnail: string
-  price: number
-  originalPrice?: number
-  rating: number
-  reviewCount: number
-  isNew: boolean
-  isOnSale: boolean
-}
-
-function transformProduct(p: any): ProductCardData {
-  const prices = p.variants?.[0]?.prices || []
-  const usdPrice = prices.find((pr: any) => pr.currency_code === "usd" || pr.c === "usd")
-  const usdOriginal = prices.find((pr: any) => pr.currency_code === "usd" && pr.c === "usd")
-
-  const price = usdPrice ? (usdPrice.a || usdPrice.amount) / 100 : 0
-  const hasSale = p.variants?.some((v: any) =>
-    v.prices?.some((pr: any) => pr.a !== pr.original_amount && pr.original_amount)
-  )
-
-  return {
-    id: p.id,
-    handle: p.handle,
-    title: p.title,
-    thumbnail: p.thumbnail || "",
-    price,
-    originalPrice: hasSale ? price * 1.3 : undefined,
-    rating: p.rating || 0,
-    reviewCount: p.review_count || 0,
-    isNew: false,
-    isOnSale: hasSale,
-  }
-}
+import type { ApiCategory, ApiProduct, ProductCardData } from "@/lib/catalog"
+import { toProductCardData } from "@/lib/catalog"
 
 export default function ProductsPage() {
   const t = useTranslations("product")
@@ -57,7 +16,7 @@ export default function ProductsPage() {
   const router = useRouter()
 
   const [products, setProducts] = useState<ProductCardData[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
+  const [categories, setCategories] = useState<ApiCategory[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
@@ -67,6 +26,7 @@ export default function ProductsPage() {
 
   const categoryId = searchParams.get("category") || ""
   const searchQuery = searchParams.get("q") || ""
+  const categoryView = searchParams.get("category_view") === "1"
 
   useEffect(() => {
     const cat = categories.find((c) => c.id === categoryId)
@@ -85,6 +45,9 @@ export default function ProductsPage() {
         const params = new URLSearchParams()
         if (categoryId) params.set("category_id", categoryId)
         if (searchQuery) params.set("q", searchQuery)
+        if (searchParams.get("on_sale") === "true") params.set("on_sale", "true")
+        if (sortBy === "newest") params.set("sort", "newest")
+        if (sortBy === "top_rated") params.set("sort", "top_rated")
         if (sortBy === "price_low") params.set("order", "price_asc")
         if (sortBy === "price_high") params.set("order", "price_desc")
 
@@ -97,7 +60,7 @@ export default function ProductsPage() {
         const productsData = await productsRes.json()
         const categoriesData = categoriesRes.ok ? (await categoriesRes.json()).product_categories || [] : []
 
-        setProducts((productsData.products || []).map(transformProduct))
+        setProducts((productsData.products || []).map((product: ApiProduct) => toProductCardData(product)))
         setCategories(categoriesData)
       } catch (err: any) {
         setError(err.message || "Something went wrong")
@@ -106,7 +69,7 @@ export default function ProductsPage() {
       }
     }
     fetchData()
-  }, [categoryId, searchQuery, sortBy, API])
+  }, [categoryId, searchQuery, sortBy, searchParams])
 
   const selectedCategory = categories.find((c) => c.id === categoryId)
 
@@ -120,7 +83,7 @@ export default function ProductsPage() {
           ]}
         />
 
-        <div className="flex items-center justify-between mt-6 mb-8">
+          <div className="flex items-center justify-between mt-6 mb-8">
           <div>
             <h1 className="text-2xl md:text-3xl font-display font-bold text-gray-900">
               {selectedCategory ? selectedCategory.name : "All Products"}
@@ -178,7 +141,22 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        <div className="flex gap-8">
+          {categoryView ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => router.push(`/products?category=${cat.id}`)}
+                  className="rounded-2xl border border-gray-200 bg-gray-50 p-6 text-left hover:border-brand-300 hover:bg-brand-50 transition-colors"
+                >
+                  <p className="text-xs font-semibold uppercase tracking-wide text-brand-600">Category</p>
+                  <h2 className="mt-3 text-xl font-semibold text-gray-900">{cat.name}</h2>
+                  <p className="mt-2 text-sm text-gray-500">Browse products in {cat.name.toLowerCase()}.</p>
+                </button>
+              ))}
+            </div>
+          ) : (
+          <div className="flex gap-8">
           {/* Sidebar filters */}
           <aside className={`${showFilters ? "block" : "hidden"} lg:block w-full lg:w-64 shrink-0`}>
             <div className="lg:sticky lg:top-24 space-y-6">
@@ -253,6 +231,7 @@ export default function ProductsPage() {
             )}
           </div>
         </div>
+          )}
       </div>
     </div>
   )

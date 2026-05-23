@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl"
 import { Package, Clock, CreditCard, ChevronRight, Search, Loader2 } from "lucide-react"
-import Link from "next/link"
+import { Link } from "@/lib/i18n/navigation"
 import { useState, useEffect } from "react"
 import { useAuth } from "@/lib/auth"
 import { API } from "@/lib/api"

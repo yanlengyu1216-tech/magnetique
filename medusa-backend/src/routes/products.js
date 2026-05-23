@@ -23,8 +23,47 @@ router.get("/", (req, res) => {
     query += ` AND p.category_id = ?`
     params.push(req.query.category_id)
   }
+  if (req.query.category_handle) {
+    query += ` AND pc.handle = ?`
+    params.push(req.query.category_handle)
+  }
+  if (req.query.on_sale === "true") {
+    query += ` AND EXISTS (
+      SELECT 1
+      FROM product_variants pv
+      WHERE pv.product_id = p.id
+      AND EXISTS (
+        SELECT 1
+        FROM json_each(pv.prices)
+        WHERE CAST(json_extract(json_each.value, '$.original_amount') AS INTEGER) >
+              CAST(COALESCE(json_extract(json_each.value, '$.a'), json_extract(json_each.value, '$.amount'), 0) AS INTEGER)
+      )
+    )`
+  }
 
-  query += ` ORDER BY p.created_at DESC`
+  const orderMap = {
+    price_asc: `COALESCE((
+      SELECT MIN(CAST(COALESCE(json_extract(json_each.value, '$.a'), json_extract(json_each.value, '$.amount'), 0) AS INTEGER))
+      FROM product_variants pv
+      JOIN json_each(pv.prices)
+      WHERE pv.product_id = p.id
+    ), 0) ASC`,
+    price_desc: `COALESCE((
+      SELECT MAX(CAST(COALESCE(json_extract(json_each.value, '$.a'), json_extract(json_each.value, '$.amount'), 0) AS INTEGER))
+      FROM product_variants pv
+      JOIN json_each(pv.prices)
+      WHERE pv.product_id = p.id
+    ), 0) DESC`,
+    top_rated: `COALESCE((
+      SELECT AVG(r.rating)
+      FROM reviews r
+      WHERE r.product_id = p.id
+    ), 0) DESC, p.created_at DESC`,
+    newest: `p.created_at DESC`,
+  }
+
+  const sortKey = req.query.order || req.query.sort || "newest"
+  query += ` ORDER BY ${orderMap[sortKey] || orderMap.newest}`
 
   if (req.query.limit) {
     query += ` LIMIT ?`

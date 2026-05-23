@@ -1,14 +1,19 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
 import { Heart, ShoppingCart, Star, Eye } from "lucide-react"
+import { Link, useRouter } from "@/lib/i18n/navigation"
+import { useCartStore } from "@/store/cart"
+import { useWishlistStore } from "@/store/wishlist"
 
 interface Product {
   id: string
   handle: string
   title: string
   thumbnail: string
+  variantId: string
+  variantTitle: string
+  maxQuantity: number
   price: number
   originalPrice?: number
   rating: number
@@ -22,8 +27,42 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const [isWishlisted, setIsWishlisted] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
+  const router = useRouter()
+  const addItem = useCartStore((state) => state.addItem)
+  const isWishlisted = useWishlistStore((state) => state.isWishlisted(product.id))
+  const addWishlist = useWishlistStore((state) => state.addItem)
+  const removeWishlist = useWishlistStore((state) => state.removeItem)
+
+  const handleToggleWishlist = () => {
+    if (isWishlisted) {
+      removeWishlist(product.id)
+      return
+    }
+
+    addWishlist({
+      id: product.id,
+      handle: product.handle,
+      title: product.title,
+      thumbnail: product.thumbnail,
+      price: product.price,
+    })
+  }
+
+  const handleQuickAdd = () => {
+    addItem({
+      id: product.variantId,
+      productId: product.id,
+      handle: product.handle,
+      title: product.title,
+      variant: product.variantId,
+      variantTitle: product.variantTitle,
+      image: product.thumbnail,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      maxQuantity: product.maxQuantity,
+    })
+  }
 
   return (
     <div
@@ -47,7 +86,8 @@ export function ProductCard({ product }: ProductCardProps) {
 
       {/* Wishlist button */}
       <button
-        onClick={() => setIsWishlisted(!isWishlisted)}
+        type="button"
+        onClick={handleToggleWishlist}
         className="absolute top-3 right-3 z-10 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-all opacity-0 group-hover:opacity-100"
         aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
       >
@@ -73,10 +113,18 @@ export function ProductCard({ product }: ProductCardProps) {
             isHovered ? "opacity-100" : "opacity-0"
           }`}
         >
-          <button className="p-3 bg-white rounded-full shadow-lg hover:bg-brand-600 hover:text-white transition-all transform hover:scale-110">
+          <button
+            type="button"
+            onClick={handleQuickAdd}
+            className="p-3 bg-white rounded-full shadow-lg hover:bg-brand-600 hover:text-white transition-all transform hover:scale-110"
+          >
             <ShoppingCart className="h-5 w-5" />
           </button>
-          <button className="p-3 bg-white rounded-full shadow-lg hover:bg-brand-600 hover:text-white transition-all transform hover:scale-110">
+          <button
+            type="button"
+            onClick={() => router.push(`/products/${product.handle}`)}
+            className="p-3 bg-white rounded-full shadow-lg hover:bg-brand-600 hover:text-white transition-all transform hover:scale-110"
+          >
             <Eye className="h-5 w-5" />
           </button>
         </div>
@@ -120,7 +168,11 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Add to cart button (mobile-friendly) */}
-        <button className="w-full mt-3 bg-brand-600 text-white text-sm font-medium py-2.5 rounded-lg hover:bg-brand-700 transition-colors flex items-center justify-center gap-2 md:hidden">
+        <button
+          type="button"
+          onClick={handleQuickAdd}
+          className="w-full mt-3 bg-brand-600 text-white text-sm font-medium py-2.5 rounded-lg hover:bg-brand-700 transition-colors flex items-center justify-center gap-2 md:hidden"
+        >
           <ShoppingCart className="h-4 w-4" />
           Add to Cart
         </button>
