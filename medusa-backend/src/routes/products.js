@@ -4,12 +4,16 @@ const router = express.Router()
 // GET /store/products
 router.get("/", (req, res) => {
   const db = req.db
-  const requestedCategoryId = req.query.category_id
-  let requestedCategoryHandle = req.query.category_handle || null
+  let requestedCategory = null
 
-  if (requestedCategoryId && !requestedCategoryHandle) {
-    const category = db.prepare("SELECT handle FROM product_categories WHERE id = ?").get(requestedCategoryId)
-    requestedCategoryHandle = category?.handle || null
+  if (req.query.category_id) {
+    requestedCategory = db
+      .prepare("SELECT id, handle FROM product_categories WHERE id = ?")
+      .get(req.query.category_id)
+  } else if (req.query.category_handle) {
+    requestedCategory = db
+      .prepare("SELECT id, handle FROM product_categories WHERE handle = ?")
+      .get(req.query.category_handle)
   }
 
   let query = `SELECT p.*, pc.name as category_name, pc.handle as category_handle
@@ -26,13 +30,15 @@ router.get("/", (req, res) => {
     query += ` AND p.handle = ?`
     params.push(req.query.handle)
   }
-  if (req.query.category_id && !requestedCategoryHandle) {
-    query += ` AND p.category_id = ?`
-    params.push(req.query.category_id)
-  }
-  if (req.query.category_handle && !requestedCategoryHandle) {
-    query += ` AND pc.handle = ?`
-    params.push(req.query.category_handle)
+  if ((req.query.category_id || req.query.category_handle) && requestedCategory) {
+    query += ` AND EXISTS (
+      SELECT 1
+      FROM product_category_links pcl
+      WHERE pcl.product_id = p.id AND pcl.category_id = ?
+    )`
+    params.push(requestedCategory.id)
+  } else if (req.query.category_id || req.query.category_handle) {
+    return res.json({ products: [], count: 0 })
   }
   if (req.query.on_sale === "true") {
     query += ` AND EXISTS (
@@ -87,7 +93,7 @@ router.get("/", (req, res) => {
   const getVariants = db.prepare("SELECT * FROM product_variants WHERE product_id = ?")
   const getReviews = db.prepare("SELECT COUNT(*) as count, AVG(rating) as avg_rating FROM reviews WHERE product_id = ?")
 
-  let result = products.map(p => {
+  const result = products.map(p => {
     const variants = getVariants.all(p.id)
     const reviewStats = getReviews.get(p.id)
     const images = JSON.parse(p.images || "[]")
@@ -123,10 +129,6 @@ router.get("/", (req, res) => {
       created_at: p.created_at,
     }
   })
-
-  if (requestedCategoryHandle) {
-    result = result.filter((product) => db.filterProductsByCategory(product, requestedCategoryHandle))
-  }
 
   res.json({ products: result, count: result.length })
 })

@@ -48,15 +48,15 @@ for (const c of [{t:"Best Sellers",h:"best-sellers"},{t:"New Arrivals",h:"new-ar
 console.log(`  ✓ 3 collections created`)
 
 const categoryAssignments = {
-  "eiffel-tower-paris-magnet": "travel-magnets",
-  "colosseum-rome-magnet": "travel-magnets",
-  "custom-family-portrait-magnet": "custom-design",
-  "christmas-reindeer-magnet-set": "seasonal",
-  "sakura-cherry-blossom-magnet": "travel-magnets",
-  "panda-3d-magnet": "3d-magnets",
-  "pizza-italy-magnet": "food-series",
-  "london-bus-magnet": "travel-magnets",
-  "minimalist-moon-phase-magnet": "minimalist",
+  "eiffel-tower-paris-magnet": ["travel-magnets"],
+  "colosseum-rome-magnet": ["travel-magnets"],
+  "custom-family-portrait-magnet": ["custom-design", "gift-sets"],
+  "christmas-reindeer-magnet-set": ["seasonal", "gift-sets"],
+  "sakura-cherry-blossom-magnet": ["travel-magnets"],
+  "panda-3d-magnet": ["3d-magnets", "animal-series"],
+  "pizza-italy-magnet": ["food-series"],
+  "london-bus-magnet": ["travel-magnets"],
+  "minimalist-moon-phase-magnet": ["minimalist"],
 }
 
 const products = [
@@ -73,11 +73,16 @@ const products = [
 
 const insertP = db.prepare("INSERT INTO products (id,title,subtitle,description,handle,material,weight,length,width,height,origin_country,hs_code,discountable,thumbnail,images,tags,category_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
 const insertV = db.prepare("INSERT INTO product_variants (id,product_id,title,prices,inventory_quantity) VALUES (?,?,?,?,?)")
+const insertPcl = db.prepare("INSERT INTO product_category_links (product_id,category_id) VALUES (?,?)")
 
 const tx = db.transaction(() => {
   for (const p of products) {
-    insertP.run(p.id,p.t,p.s,p.d,p.h,p.m,p.w,p.l,p.wd,p.ht,p.oc,p.hs,p.disc??1,p.th,p.im,p.tg,catIds[categoryAssignments[p.h]] || null)
+    const assignedHandles = categoryAssignments[p.h] || []
+    insertP.run(p.id,p.t,p.s,p.d,p.h,p.m,p.w,p.l,p.wd,p.ht,p.oc,p.hs,p.disc??1,p.th,p.im,p.tg,catIds[assignedHandles[0]] || null)
     for (const v of p.vs) insertV.run(uuidv4(),p.id,v.t,JSON.stringify(v.p),v.q)
+    for (const handle of assignedHandles) {
+      if (catIds[handle]) insertPcl.run(p.id, catIds[handle])
+    }
   }
 })
 tx()

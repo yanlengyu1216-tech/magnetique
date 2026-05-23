@@ -21,6 +21,8 @@ docker-data/
 # Database
 *.sqlite
 *.sqlite3
+*.sqlite-shm
+*.sqlite-wal
 
 # Build outputs
 medusa-backend/dist

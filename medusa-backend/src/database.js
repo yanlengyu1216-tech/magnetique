@@ -36,7 +36,7 @@ function inferCategoryHandle(product) {
   return null
 }
 
-function getAdditionalCategoryHandles(product) {
+function getCategoryHandles(product) {
   const haystack = [
     product.title,
     product.subtitle,
@@ -97,9 +97,43 @@ function backfillProductCategories(db) {
   }
 }
 
-function filterProductsByCategory(product, requestedCategoryHandle) {
-  const inferredHandles = getAdditionalCategoryHandles(product)
-  return inferredHandles.includes(requestedCategoryHandle)
+function syncProductCategoryLinks(db) {
+  const categoryRows = db
+    .prepare("SELECT id, handle FROM product_categories WHERE is_active = 1")
+    .all()
+
+  const categoryMap = new Map(categoryRows.map((row) => [row.handle, row.id]))
+  const products = db
+    .prepare("SELECT id, title, subtitle, description, handle, tags, category_id FROM products")
+    .all()
+
+  const upsertLink = db.prepare(`
+    INSERT OR IGNORE INTO product_category_links (product_id, category_id, created_at)
+    VALUES (?, ?, datetime('now'))
+  `)
+
+  let linkedCount = 0
+  for (const product of products) {
+    const handles = new Set(getCategoryHandles(product))
+
+    if (product.category_id) {
+      const primaryCategory = categoryRows.find((row) => row.id === product.category_id)
+      if (primaryCategory?.handle) {
+        handles.add(primaryCategory.handle)
+      }
+    }
+
+    for (const handle of handles) {
+      const categoryId = categoryMap.get(handle)
+      if (!categoryId) continue
+      const result = upsertLink.run(product.id, categoryId)
+      if (result.changes > 0) linkedCount += 1
+    }
+  }
+
+  if (linkedCount > 0) {
+    console.log(`✓ Synced ${linkedCount} product-category links`)
+  }
 }
 
 function initDatabase() {
@@ -170,6 +204,15 @@ function initDatabase() {
       manage_inventory INTEGER DEFAULT 1,
       created_at TEXT DEFAULT (datetime('now')),
       FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS product_category_links (
+      product_id TEXT NOT NULL,
+      category_id TEXT NOT NULL,
+      created_at TEXT DEFAULT (datetime('now')),
+      PRIMARY KEY (product_id, category_id),
+      FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+      FOREIGN KEY (category_id) REFERENCES product_categories(id) ON DELETE CASCADE
     );
 
     CREATE TABLE IF NOT EXISTS customers (
@@ -255,7 +298,7 @@ function initDatabase() {
 
   console.log("✓ Database initialized (SQLite)")
   backfillProductCategories(db)
-  db.filterProductsByCategory = filterProductsByCategory
+  syncProductCategoryLinks(db)
   return db
 }
 
