@@ -37,6 +37,7 @@ app.use("/store/orders", require("./routes/orders"))
 app.use("/store/customers", require("./routes/customers"))
 app.use("/store/auth", require("./routes/auth"))
 app.use("/store/reviews", require("./routes/reviews"))
+app.use("/store/leads", require("./routes/leads"))
 app.use("/admin", require("./routes/admin"))
 
 // Health check

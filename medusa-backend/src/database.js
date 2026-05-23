@@ -294,6 +294,31 @@ function initDatabase() {
       expires_at TEXT,
       is_active INTEGER DEFAULT 1
     );
+
+    CREATE TABLE IF NOT EXISTS contact_inquiries (
+      id TEXT PRIMARY KEY,
+      first_name TEXT NOT NULL,
+      last_name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      subject TEXT NOT NULL,
+      message TEXT NOT NULL,
+      status TEXT DEFAULT 'new',
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS custom_requests (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      material TEXT NOT NULL,
+      size TEXT NOT NULL,
+      quantity INTEGER NOT NULL,
+      notes TEXT,
+      image_name TEXT,
+      image_data TEXT,
+      status TEXT DEFAULT 'new',
+      created_at TEXT DEFAULT (datetime('now'))
+    );
   `)
 
   console.log("✓ Database initialized (SQLite)")

@@ -62,6 +62,20 @@ router.get("/customers", (req, res) => {
   res.json({ customers })
 })
 
+router.get("/contact-inquiries", (req, res) => {
+  const inquiries = req.db
+    .prepare("SELECT * FROM contact_inquiries ORDER BY created_at DESC")
+    .all()
+  res.json({ inquiries })
+})
+
+router.get("/custom-requests", (req, res) => {
+  const requests = req.db
+    .prepare("SELECT id, name, email, material, size, quantity, notes, image_name, status, created_at FROM custom_requests ORDER BY created_at DESC")
+    .all()
+  res.json({ requests })
+})
+
 // List products (admin)
 router.get("/products", (req, res) => {
   const db = req.db

@@ -1,12 +1,14 @@
 import { MetadataRoute } from "next"
 
 export default function robots(): MetadataRoute.Robots {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://magnetique-theta.vercel.app"
+
   return {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/account/", "/admin/"],
+      disallow: ["/account/", "/checkout", "/cart", "/admin/"],
     },
-    sitemap: "https://magnetique.com/sitemap.xml",
+    sitemap: `${baseUrl}/sitemap.xml`,
   }
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Mail, MapPin, Phone, Clock, Send, Check } from "lucide-react"
+import { API } from "@/lib/api"
 
 const contactInfo = [
   { icon: Mail, label: "Email", value: "hello@magnetique.com", detail: "We respond within 24 hours" },
@@ -19,10 +20,53 @@ const faqs = [
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState("")
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    subject: "General Inquiry",
+    message: "",
+  })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const updateForm = (field: keyof typeof form, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSubmitted(true)
+    setSubmitting(true)
+    setError("")
+
+    try {
+      const res = await fetch(`${API}/store/leads/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          first_name: form.firstName,
+          last_name: form.lastName,
+          email: form.email,
+          subject: form.subject,
+          message: form.message,
+        }),
+      })
+
+      if (!res.ok) throw new Error("Failed to send your message")
+
+      setSubmitted(true)
+      setForm({
+        firstName: "",
+        lastName: "",
+        email: "",
+        subject: "General Inquiry",
+        message: "",
+      })
+    } catch (err: any) {
+      setError(err.message || "Something went wrong")
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -54,23 +98,50 @@ export default function ContactPage() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
                 <h2 className="text-2xl font-display font-bold text-gray-900 mb-6">Send us a message</h2>
+                {error && (
+                  <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+                    {error}
+                  </div>
+                )}
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">First Name</label>
-                    <input type="text" required className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-500" />
+                    <input
+                      type="text"
+                      value={form.firstName}
+                      onChange={(e) => updateForm("firstName", e.target.value)}
+                      required
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Last Name</label>
-                    <input type="text" required className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-500" />
+                    <input
+                      type="text"
+                      value={form.lastName}
+                      onChange={(e) => updateForm("lastName", e.target.value)}
+                      required
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
-                  <input type="email" required className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-500" />
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => updateForm("email", e.target.value)}
+                    required
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Subject</label>
-                  <select className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-500">
+                  <select
+                    value={form.subject}
+                    onChange={(e) => updateForm("subject", e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  >
                     <option>General Inquiry</option>
                     <option>Order Issue</option>
                     <option>Custom Design Request</option>
@@ -80,11 +151,21 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Message</label>
-                  <textarea rows={5} required className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-500 resize-none" />
+                  <textarea
+                    rows={5}
+                    value={form.message}
+                    onChange={(e) => updateForm("message", e.target.value)}
+                    required
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-500 resize-none"
+                  />
                 </div>
-                <button type="submit" className="w-full bg-brand-600 text-white py-3.5 rounded-xl font-medium hover:bg-brand-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-brand-200">
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full bg-brand-600 text-white py-3.5 rounded-xl font-medium hover:bg-brand-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-brand-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                >
                   <Send className="h-4 w-4" />
-                  Send Message
+                  {submitting ? "Sending..." : "Send Message"}
                 </button>
               </form>
             )}

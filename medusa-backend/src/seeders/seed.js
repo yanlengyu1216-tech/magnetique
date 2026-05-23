@@ -20,11 +20,13 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS orders (id TEXT PRIMARY KEY, cart_id TEXT, customer_id TEXT, email TEXT, items TEXT DEFAULT '[]', shipping_address TEXT, shipping_method TEXT, payment_method TEXT, subtotal REAL DEFAULT 0, shipping_cost REAL DEFAULT 0, tax REAL DEFAULT 0, total REAL DEFAULT 0, status TEXT DEFAULT 'pending', tracking_number TEXT, created_at TEXT DEFAULT (datetime('now')), updated_at TEXT DEFAULT (datetime('now')));
   CREATE TABLE IF NOT EXISTS reviews (id TEXT PRIMARY KEY, product_id TEXT NOT NULL, customer_id TEXT, author TEXT NOT NULL, rating INTEGER NOT NULL CHECK(rating >= 1 AND rating <= 5), text TEXT, created_at TEXT DEFAULT (datetime('now')));
   CREATE TABLE IF NOT EXISTS coupons (id TEXT PRIMARY KEY, code TEXT UNIQUE NOT NULL, discount_type TEXT NOT NULL, discount_value REAL NOT NULL, min_order_amount REAL, usage_limit INTEGER, used_count INTEGER DEFAULT 0, expires_at TEXT, is_active INTEGER DEFAULT 1);
+  CREATE TABLE IF NOT EXISTS contact_inquiries (id TEXT PRIMARY KEY, first_name TEXT NOT NULL, last_name TEXT NOT NULL, email TEXT NOT NULL, subject TEXT NOT NULL, message TEXT NOT NULL, status TEXT DEFAULT 'new', created_at TEXT DEFAULT (datetime('now')));
+  CREATE TABLE IF NOT EXISTS custom_requests (id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL, material TEXT NOT NULL, size TEXT NOT NULL, quantity INTEGER NOT NULL, notes TEXT, image_name TEXT, image_data TEXT, status TEXT DEFAULT 'new', created_at TEXT DEFAULT (datetime('now')));
 `)
 
 console.log("🌱 Seeding Magnetique store...\n")
 
-db.exec(`DELETE FROM reviews; DELETE FROM orders; DELETE FROM carts; DELETE FROM addresses; DELETE FROM customers; DELETE FROM product_variants; DELETE FROM products; DELETE FROM collections; DELETE FROM product_categories; DELETE FROM regions; DELETE FROM coupons;`)
+db.exec(`DELETE FROM reviews; DELETE FROM orders; DELETE FROM carts; DELETE FROM addresses; DELETE FROM customers; DELETE FROM product_variants; DELETE FROM products; DELETE FROM collections; DELETE FROM product_categories; DELETE FROM regions; DELETE FROM coupons; DELETE FROM contact_inquiries; DELETE FROM custom_requests; DELETE FROM product_category_links;`)
 
 const regionIds = []
 for (const r of [{name:"EU",currency:"eur",tax:19,countries:JSON.stringify(["DE","FR","ES","IT","NL","BE"])},{name:"US",currency:"usd",tax:0,countries:JSON.stringify(["US","CA"])},{name:"UK",currency:"gbp",tax:20,countries:JSON.stringify(["GB"])}]) {

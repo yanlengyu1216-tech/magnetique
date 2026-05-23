@@ -4,6 +4,7 @@
   "outputDirectory": ".next",
   "installCommand": "npm install",
   "env": {
-    "NEXT_PUBLIC_MEDUSA_URL": "https://magnetique.onrender.com"
+    "NEXT_PUBLIC_MEDUSA_URL": "https://magnetique.onrender.com",
+    "NEXT_PUBLIC_SITE_URL": "https://magnetique-theta.vercel.app"
   }
 }
